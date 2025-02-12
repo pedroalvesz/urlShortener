@@ -10,9 +10,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+@AllArgsConstructor
 public class RedirectHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final S3ManagerService s3ManagerService;
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
