@@ -18,20 +18,18 @@ public class RedirectHandler implements RequestHandler<Map<String, Object>, Map<
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
-        String pathParameters = (String) input.get("rawPath");
-        String shortUrlCode = pathParameters.replace("/", "");
-
-        if (shortUrlCode == null || shortUrlCode.isEmpty()) {
-            throw new IllegalArgumentException("Invalid input: 'shortUrlCode' is required.");
-        }
+        String shortUrlCode = extractShortUrlCode(input);
 
         InputStream s3InputStream = s3ManagerService.getObject(shortUrlCode);
         UrlDataDTO urlDataDTO = ObjectMapperUtils.fromInputStream(s3InputStream, UrlDataDTO.class);
 
+        return createResponse(urlDataDTO);
+    }
+
+    private Map<String, Object> createResponse(UrlDataDTO urlDataDTO) {
         Map<String, Object> response = new HashMap<>();
 
-        Long currentTimeInSeconds = System.currentTimeMillis() / 1000;
-        if (currentTimeInSeconds >= urlDataDTO.getExpirationTime()) {
+        if (isUrlExpired(urlDataDTO)) {
             response.put("statusCode", 410);
             response.put("body", "This URl has expired.");
             return response;
@@ -41,9 +39,24 @@ public class RedirectHandler implements RequestHandler<Map<String, Object>, Map<
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Location", urlDataDTO.getOriginalUrl());
-
         response.put("headers", headers);
 
         return response;
+    }
+
+    private Boolean isUrlExpired(UrlDataDTO urlDataDTO) {
+        Long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+        return currentTimeInSeconds >= urlDataDTO.getExpirationTime();
+    }
+
+    private String extractShortUrlCode(Map<String, Object> input) {
+        String pathParameters = (String) input.get("rawPath");
+        String shortUrlCode = pathParameters.replace("/", "");
+
+        if (shortUrlCode.isEmpty()) {
+            throw new IllegalArgumentException("Invalid input: 'shortUrlCode' is required.");
+        }
+
+        return shortUrlCode;
     }
 }
