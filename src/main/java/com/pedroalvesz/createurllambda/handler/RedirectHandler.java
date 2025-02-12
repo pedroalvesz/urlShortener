@@ -2,9 +2,10 @@ package com.pedroalvesz.createurllambda.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pedroalvesz.createurllambda.UrlData;
-import com.pedroalvesz.createurllambda.manager.S3Manager;
+import com.pedroalvesz.createurllambda.UrlDataDTO;
+import com.pedroalvesz.createurllambda.manager.S3ManagerService;
+import com.pedroalvesz.createurllambda.utils.ObjectMapperUtils;
+import lombok.AllArgsConstructor;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -24,20 +25,13 @@ public class RedirectHandler implements RequestHandler<Map<String, Object>, Map<
             throw new IllegalArgumentException("Invalid input: 'shortUrlCode' is required.");
         }
 
-        S3Manager s3Manager = new S3Manager();
-        InputStream s3InputStream = s3Manager.getObject(shortUrlCode);
-
-        UrlData urlData;
-        try {
-            urlData = objectMapper.readValue(s3InputStream, UrlData.class);
-        } catch (Exception exception) {
-            throw new RuntimeException("ERROR | Error deserializing URL data from S3: " + exception.getMessage(), exception);
-        }
+        InputStream s3InputStream = s3ManagerService.getObject(shortUrlCode);
+        UrlDataDTO urlDataDTO = ObjectMapperUtils.fromInputStream(s3InputStream, UrlDataDTO.class);
 
         Map<String, Object> response = new HashMap<>();
 
         Long currentTimeInSeconds = System.currentTimeMillis() / 1000;
-        if (currentTimeInSeconds >= urlData.getExpirationTime()) {
+        if (currentTimeInSeconds >= urlDataDTO.getExpirationTime()) {
             response.put("statusCode", 410);
             response.put("body", "This URl has expired.");
             return response;
@@ -46,7 +40,7 @@ public class RedirectHandler implements RequestHandler<Map<String, Object>, Map<
         response.put("statusCode", 302);
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("Location", urlData.getOriginalUrl());
+        headers.put("Location", urlDataDTO.getOriginalUrl());
 
         response.put("headers", headers);
 
