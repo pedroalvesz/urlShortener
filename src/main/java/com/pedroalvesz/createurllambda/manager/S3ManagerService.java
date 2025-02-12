@@ -10,13 +10,11 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.InputStream;
 import java.util.UUID;
 
-public class S3Manager {
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+public class S3ManagerService {
 
     private final S3Client s3Client = S3Client.builder().build();
 
-    public String putObject(UrlData urlData) {
+    public String putObject(UrlDataDTO urlDataDTO) {
         try {
             final String shortUrlCode = UUID.randomUUID().toString().substring(0, 8);
 
@@ -25,7 +23,7 @@ public class S3Manager {
                     .key(shortUrlCode + ".json")
                     .build();
 
-            final String urlDataJson = objectMapper.writeValueAsString(urlData);
+            String urlDataJson = ObjectMapperUtils.toJson(urlDataDTO);
             s3Client.putObject(putObjectRequest, RequestBody.fromString(urlDataJson));
 
             return shortUrlCode;
