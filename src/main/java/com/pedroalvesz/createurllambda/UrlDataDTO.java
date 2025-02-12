@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-public class UrlData {
+public class UrlDataDTO {
 
     private String originalUrl;
 
