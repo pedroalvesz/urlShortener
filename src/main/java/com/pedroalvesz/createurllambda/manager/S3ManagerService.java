@@ -1,7 +1,7 @@
 package com.pedroalvesz.createurllambda.manager;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pedroalvesz.createurllambda.UrlData;
+import com.pedroalvesz.createurllambda.UrlDataDTO;
+import com.pedroalvesz.createurllambda.utils.ObjectMapperUtils;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -32,16 +32,16 @@ public class S3ManagerService {
         }
     }
 
-    public InputStream getObject(String shortUrlCode) {
+    public InputStream getObject(String name) {
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket("url-shortener-pedroalvesz")
-                    .key(shortUrlCode + ".json")
+                    .key(name + ".json")
                     .build();
 
             return s3Client.getObject(getObjectRequest);
         } catch (Exception exception) {
-            throw new RuntimeException("ERROR | Error fetching URL from S3: " + exception.getMessage(), exception);
+            throw new RuntimeException("ERROR | Error fetching data from S3: " + exception.getMessage(), exception);
         }
     }
 }
