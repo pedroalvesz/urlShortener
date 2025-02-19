@@ -5,16 +5,20 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.pedroalvesz.createurllambda.UrlDataDTO;
 import com.pedroalvesz.createurllambda.service.S3ManagerService;
 import com.pedroalvesz.createurllambda.utils.ObjectMapperUtils;
-import lombok.AllArgsConstructor;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-@AllArgsConstructor
+@SuppressWarnings("unused")
 public class RedirectHandler implements RequestHandler<Map<String, Object>, Map<String, Object>> {
 
     private final S3ManagerService s3ManagerService;
+
+    @SuppressWarnings("unused")
+    public RedirectHandler() {
+        this.s3ManagerService = new S3ManagerService();
+    }
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> input, Context context) {
