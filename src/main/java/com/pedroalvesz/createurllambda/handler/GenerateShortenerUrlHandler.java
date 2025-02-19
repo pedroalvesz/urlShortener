@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import java.util.Map;
 
 @AllArgsConstructor
-public class GenerateShortenerUrl implements RequestHandler<Map<String, Object>, Map<String, String>> {
+public class GenerateShortenerUrlHandler implements RequestHandler<Map<String, Object>, Map<String, String>> {
 
     private final S3ManagerService s3ManagerService;
 
