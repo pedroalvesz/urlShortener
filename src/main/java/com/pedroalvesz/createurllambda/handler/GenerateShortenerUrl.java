@@ -3,7 +3,7 @@ package com.pedroalvesz.createurllambda.handler;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.pedroalvesz.createurllambda.UrlDataDTO;
-import com.pedroalvesz.createurllambda.manager.S3ManagerService;
+import com.pedroalvesz.createurllambda.service.S3ManagerService;
 import com.pedroalvesz.createurllambda.utils.ObjectMapperUtils;
 import lombok.AllArgsConstructor;
 

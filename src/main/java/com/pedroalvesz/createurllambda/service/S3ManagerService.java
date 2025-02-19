@@ -1,4 +1,4 @@
-package com.pedroalvesz.createurllambda.manager;
+package com.pedroalvesz.createurllambda.service;
 
 import com.pedroalvesz.createurllambda.UrlDataDTO;
 import com.pedroalvesz.createurllambda.utils.ObjectMapperUtils;
